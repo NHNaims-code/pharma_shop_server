@@ -2,6 +2,7 @@ const express = require('express');
 var cors = require('cors');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const password = "MXv5ztE-s297SNy";
 
 
@@ -31,27 +32,64 @@ client.connect(err => {
       collection.insertOne(product)
       .then(result => {
 
-        console.log(result);
-        res.send(result)
-        // console.log(result.insertedCount);
-        // res.send(result.insertedCount);
-        //   console.log(result);
-        //   if(result.insertedCount == 1){
-        //       res.send("success")
-        //   }else{
-        //       res.send("failed")
-        //   }
+        if(result.insertedCount >= 1){
+          res.send(true);
+        }else{
+          res.send(false);
+        }
+  
       })
+  })
+
+  app.delete("/deleteItem/:id", (req, res) => {
+    console.log(req.params.id);
+
+    collection.deleteOne({_id:ObjectId(req.params.id)})
+    .then((result) => {
+      console.log(result.deletedCount);
+      if(result.deletedCount >= 1){
+        res.send(true)
+      }else{
+        res.send(false)
+      }
+      // res.send(result.deletedCount)
+    })
+    
   })
 
   app.get("/products", (req, res) => {
       collection.find({})
         .toArray((err, documents) => {
             res.send(documents);
+            
         })
   })
 
-//   client.close();
+  app.patch('/updateProduct/:id', (req, res) => {
+
+    collection.updateOne({_id:ObjectId(req.params.id)}, {
+      $set: {
+        company: req.body.company,
+        product: req.body.product,
+        quantity: req.body.quantity,
+        price_per_pic: req.body.price_per_pic,
+        exp: req.body.exp,
+        updatedDate: req.body.updatedDate
+      }
+    })
+    .then(result => {
+      console.log(result);
+      if(result.modifiedCount >= 1){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
+
+
+
+  // client.close();
 });
 
 
