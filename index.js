@@ -33,7 +33,7 @@ client.connect(err => {
       .then(result => {
 
         if(result.insertedCount >= 1){
-          res.send(true);
+          res.send(result);
         }else{
           res.send(false);
         }
