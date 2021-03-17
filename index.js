@@ -3,6 +3,8 @@ var cors = require('cors');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
+const pdf = require('html-pdf');
+const pdfTemplate = require('./documents');
 const password = "MXv5ztE-s297SNy";
 
 
@@ -15,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/video.mp4')
+    res.sendFile(__dirname + '/result.pdf')
 })
 
 
@@ -86,6 +88,16 @@ client.connect(err => {
       }
     })
   })
+
+  app.post('/buy', (req, res) => {
+    // pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
+    //   if(err){
+    //     return Promise.reject();
+    //   }
+    console.log("knock me");
+      res.sendFile(`${__dirname}/result.pdf`);
+    // })
+  }) 
 
 
 
