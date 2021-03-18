@@ -8,6 +8,7 @@ const pdfTemplate = require("./documents");
 const password = "MXv5ztE-s297SNy";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -56,6 +57,26 @@ client.connect((err) => {
     collection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
+  });
+
+  //update product after sale
+  app.patch("/updateSaleProduct/", (req, res) => {
+    const productName = req.body.product;
+    const newProductQuantity = req.body.quantity;
+
+    collection
+      .updateOne(
+        { product: productName },
+        { $set: { quantity: newProductQuantity } }
+      )
+      .then((result) => {
+        console.log(result);
+        if (result.modifiedCount >= 1) {
+          res.send({ status: "updated" });
+        } else {
+          res.send({ status: "error" });
+        }
+      });
   });
 
   app.patch("/updateProduct/:id", (req, res) => {
