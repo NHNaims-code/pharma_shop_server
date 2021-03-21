@@ -26,6 +26,8 @@ app.get("/", (req, res) => {
 client.connect((err) => {
   const collection = client.db("medi_shop_db").collection("products");
   const staff = client.db("medi_shop_db").collection("staff");
+  const shops = client.db("medi_shop_db").collection("shops");
+  const sales = client.db("medi_shop_db").collection("sales");
   console.log("Mongo connected");
 
   app.post("/addProduct", (req, res) => {
@@ -39,6 +41,18 @@ client.connect((err) => {
       }
     });
   });
+
+  app.post("/AddToSales", (req, res) =>{
+    const product = req.body;
+    sales.insertOne(product)
+    .then((result) => {
+      if (result.insertedCount >= 1) {
+        res.send(true);
+      } else {
+        res.send(false);
+      }
+    })
+  })
 
   app.delete("/deleteItem/:id", (req, res) => {
     console.log(req.params.id);
@@ -59,10 +73,23 @@ client.connect((err) => {
       res.send(documents);
     });
   });
+  
+  app.get("/shops", (req, res) => {
+    shops.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+
 
   app.get("/staff/:email", (req, res) => {
     staff.find({email: req.params.email}).toArray((err, documents) => {
-      res.send(documents[0]);
+      
+      if(!documents[0]){
+        res.send({status: "error"})
+      }else{
+        res.send(documents[0]);
+      }
     });
   });
 
@@ -71,19 +98,24 @@ client.connect((err) => {
     const productName = req.body.product;
     const newProductQuantity = req.body.quantity;
 
-    collection
+    console.log(req.body);
+    // if(newProductQuantity >= 0){
+      collection
       .updateOne(
-        { _id: ObjectId(req.body._id) },
+        { _id: ObjectId(req.body.id) },
         { $set: { quantity: newProductQuantity } }
       )
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result.modifiedCount >= 1) {
           res.send({ status: "updated" });
         } else {
           res.send({ status: "error" });
         }
       });
+
+
+    
   });
 
   app.patch("/updateProduct/:id", (req, res) => {
@@ -112,10 +144,7 @@ client.connect((err) => {
   });
 
   app.post("/buy", (req, res) => {
-    // pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
-    //   if(err){
-    //     return Promise.reject();
-    //   }
+
     console.log("knock me");
     res.sendFile(`${__dirname}/result.pdf`);
     // })
