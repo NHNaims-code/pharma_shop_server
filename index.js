@@ -25,6 +25,7 @@ app.get("/", (req, res) => {
 
 client.connect((err) => {
   const collection = client.db("medi_shop_db").collection("products");
+  const staff = client.db("medi_shop_db").collection("staff");
   console.log("Mongo connected");
 
   app.post("/addProduct", (req, res) => {
@@ -59,6 +60,12 @@ client.connect((err) => {
     });
   });
 
+  app.get("/staff/:email", (req, res) => {
+    staff.find({email: req.params.email}).toArray((err, documents) => {
+      res.send(documents[0]);
+    });
+  });
+
   //update product after sale
   app.patch("/updateSaleProduct/", (req, res) => {
     const productName = req.body.product;
@@ -66,7 +73,7 @@ client.connect((err) => {
 
     collection
       .updateOne(
-        { product: productName },
+        { _id: ObjectId(req.body._id) },
         { $set: { quantity: newProductQuantity } }
       )
       .then((result) => {
