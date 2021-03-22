@@ -73,15 +73,40 @@ client.connect((err) => {
       res.send(documents);
     });
   });
-  
+
+//shop area
   app.get("/shops", (req, res) => {
     shops.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
 
+  app.post("/addShop", (req, res) => {
+    shops.insertOne(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
+
+  app.patch("/updateShop/", (req, res) => {
+    console.log(req.body);
+    shops.updateOne({name: req.body.name},
+      {
+        $set: { product: req.body.product }
+      }).then(result => {
+        if(result.modifiedCount > 0){
+          res.send(true);
+        }else{
+          res.send(false);
+        }
+      })
+  })
 
 
+//staff area
   app.get("/staff/:email", (req, res) => {
     staff.find({email: req.params.email}).toArray((err, documents) => {
       
@@ -95,24 +120,30 @@ client.connect((err) => {
 
   //update product after sale
   app.patch("/updateSaleProduct/", (req, res) => {
-    const productName = req.body.product;
-    const newProductQuantity = req.body.quantity;
 
-    console.log(req.body);
-    // if(newProductQuantity >= 0){
-      collection
-      .updateOne(
+    let oldQuantity = 0;
+    let newQuantity = 0;
+    collection.find({ _id: ObjectId(req.body.id) }).toArray((err, documents) => {
+      oldQuantity = documents[0].quantity;
+      console.log(oldQuantity, "send: " ,  req.body.quantity);
+      
+      newQuantity = oldQuantity - req.body.quantity;
+      console.log(newQuantity);
+      collection.updateOne(
         { _id: ObjectId(req.body.id) },
-        { $set: { quantity: newProductQuantity } }
+        { $set: { quantity:  newQuantity} }
       )
       .then((result) => {
-        // console.log(result);
+        console.log(result.modifiedCount);
         if (result.modifiedCount >= 1) {
           res.send({ status: "updated" });
         } else {
           res.send({ status: "error" });
+          console.log(result);
         }
       });
+    })
+      
 
 
     
