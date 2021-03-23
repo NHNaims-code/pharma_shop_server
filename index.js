@@ -9,6 +9,7 @@ const password = "MXv5ztE-s297SNy";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -42,6 +43,7 @@ client.connect((err) => {
     });
   });
 
+  //sales area
   app.post("/AddToSales", (req, res) =>{
     const product = req.body;
     sales.insertOne(product)
@@ -51,6 +53,12 @@ client.connect((err) => {
       } else {
         res.send(false);
       }
+    })
+  })
+
+  app.get("/sales", (req, res) => {
+    sales.find({}).toArray((err, documents) => {
+      res.send(documents);
     })
   })
 
@@ -117,6 +125,51 @@ client.connect((err) => {
       }
     });
   });
+
+  app.get("/staff", (req, res) => {
+    staff.find({}).toArray((err, documents) => {
+      res.send(documents);
+    })
+  })
+
+
+  app.patch("/updateStaff", (req, res) => {
+    console.log(req.body);
+    staff.updateOne(
+      { _id: ObjectId(req.body._id) },
+    { $set: { name:  req.body.name, phone: req.body.phone, email: req.body.email, password: req.body.password, username: req.body.username, position: req.body.position} }).then(result =>{
+      if(result.modifiedCount > 0){
+        res.send(true)
+      }else{
+        res.send(false)
+      }
+
+      console.log(result);
+    })
+  })
+
+  app.post("/addStaff", (req, res) => {
+    staff.insertOne(req.body).then(result =>{
+      if(result.insertedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
+
+  app.delete("/deleteStaff/:id", (req, res) =>{
+    console.log(req.params.id);
+    staff.deleteOne({_id: ObjectId(req.params.id) })
+    .then(result => {
+      if(result.deletedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+      console.log(result);
+    })
+  })
 
   //update product after sale
   app.patch("/updateSaleProduct/", (req, res) => {
