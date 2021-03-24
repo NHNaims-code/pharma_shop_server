@@ -10,6 +10,7 @@ const password = "MXv5ztE-s297SNy";
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -233,6 +234,15 @@ client.connect((err) => {
     res.sendFile(`${__dirname}/result.pdf`);
     // })
   });
+
+  //Analysis Part 
+  app.post("/findByDateSale", (req, res)=>{
+    console.log(req.body.from, " == ", req.body.to);
+    sales.find({saleDate: {$gt: req.body.from, $lt: req.body.to}}).toArray((err, documents) => {
+      console.log(documents);
+      res.send(documents);
+    })
+  })
 
   // client.close();
 });
