@@ -105,7 +105,7 @@ client.connect((err) => {
     let oldProducts = [];
     shops.find({name: req.body.name}).toArray((err, documents) => {
       oldProducts = documents[0].product;
-      newProducts = [...oldProducts, req.body.product]
+      newProducts = [...oldProducts, ...(req.body.product)]
       shops.updateOne({name: req.body.name},
         {
           $set: { product: newProducts }
