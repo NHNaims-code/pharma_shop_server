@@ -258,7 +258,7 @@ client.connect((err) => {
   });
 
   //Analysis Part 
-  app.get("/findByDateSale", (req, res)=>{
+  app.get("/findByDateSale/:from/:to", (req, res)=>{
     console.log(req.body.from, " == ", req.body.to);
     sales.find({saleDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
       console.log(documents);
