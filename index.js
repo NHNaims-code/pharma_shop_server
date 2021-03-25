@@ -87,7 +87,7 @@ client.connect((err) => {
 
    //sales area
   app.get("/products/:from/:to", (req, res) => {
-    collection.find({saleDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
+    collection.find({updatedDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
       console.log(documents);
       res.send(documents);
     })
@@ -258,9 +258,9 @@ client.connect((err) => {
   });
 
   //Analysis Part 
-  app.post("/findByDateSale", (req, res)=>{
+  app.get("/findByDateSale", (req, res)=>{
     console.log(req.body.from, " == ", req.body.to);
-    sales.find({saleDate: {$gt: req.body.from, $lt: req.body.to}}).toArray((err, documents) => {
+    sales.find({saleDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
       console.log(documents);
       res.send(documents);
     })
