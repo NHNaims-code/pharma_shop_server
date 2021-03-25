@@ -57,12 +57,14 @@ client.connect((err) => {
     })
   })
 
+   //sales area
   app.get("/sales", (req, res) => {
     sales.find({}).toArray((err, documents) => {
       res.send(documents);
     })
   })
 
+   //sales area
   app.delete("/deleteItem/:id", (req, res) => {
     console.log(req.params.id);
 
@@ -73,14 +75,50 @@ client.connect((err) => {
       } else {
         res.send(false);
       }
-      // res.send(result.deletedCount)
     });
   });
 
+   //sales area
   app.get("/products", (req, res) => {
     collection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
+  });
+
+   //sales area
+  app.get("/products/:from/:to", (req, res) => {
+    collection.find({saleDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
+      console.log(documents);
+      res.send(documents);
+    })
+ 
+  });
+
+  //update product after sale
+  app.patch("/updateSaleProduct/", (req, res) => {
+
+    let oldQuantity = 0;
+    let newQuantity = 0;
+    collection.find({ _id: ObjectId(req.body.id) }).toArray((err, documents) => {
+      oldQuantity = documents[0].quantity;
+      console.log(oldQuantity, "send: " ,  req.body.quantity);
+      
+      newQuantity = oldQuantity - req.body.quantity;
+      console.log(newQuantity);
+      collection.updateOne(
+        { _id: ObjectId(req.body.id) },
+        { $set: { quantity:  newQuantity} }
+      )
+      .then((result) => {
+        console.log(result.modifiedCount);
+        if (result.modifiedCount >= 1) {
+          res.send({ status: "updated" });
+        } else {
+          res.send({ status: "error" });
+          console.log(result);
+        }
+      });
+    })
   });
 
 //shop area
@@ -90,6 +128,7 @@ client.connect((err) => {
     });
   });
 
+  //shop area
   app.post("/addShop", (req, res) => {
     shops.insertOne(req.body).then(result => {
       if(result.insertedCount > 0){
@@ -100,6 +139,7 @@ client.connect((err) => {
     })
   })
 
+  //shop area
   app.patch("/updateShop/", (req, res) => {
     console.log(req.body);
     let oldProducts = [];
@@ -133,6 +173,7 @@ client.connect((err) => {
     });
   });
 
+  //staff area
   app.get("/staff", (req, res) => {
     staff.find({}).toArray((err, documents) => {
       res.send(documents);
@@ -140,6 +181,7 @@ client.connect((err) => {
   })
 
 
+  //staff area
   app.patch("/updateStaff", (req, res) => {
     console.log(req.body);
     staff.updateOne(
@@ -155,6 +197,7 @@ client.connect((err) => {
     })
   })
 
+  //staff area
   app.post("/addStaff", (req, res) => {
     staff.insertOne(req.body).then(result =>{
       if(result.insertedCount > 0){
@@ -165,6 +208,7 @@ client.connect((err) => {
     })
   })
 
+  //staff area
   app.delete("/deleteStaff/:id", (req, res) =>{
     console.log(req.params.id);
     staff.deleteOne({_id: ObjectId(req.params.id) })
@@ -178,36 +222,7 @@ client.connect((err) => {
     })
   })
 
-  //update product after sale
-  app.patch("/updateSaleProduct/", (req, res) => {
-
-    let oldQuantity = 0;
-    let newQuantity = 0;
-    collection.find({ _id: ObjectId(req.body.id) }).toArray((err, documents) => {
-      oldQuantity = documents[0].quantity;
-      console.log(oldQuantity, "send: " ,  req.body.quantity);
-      
-      newQuantity = oldQuantity - req.body.quantity;
-      console.log(newQuantity);
-      collection.updateOne(
-        { _id: ObjectId(req.body.id) },
-        { $set: { quantity:  newQuantity} }
-      )
-      .then((result) => {
-        console.log(result.modifiedCount);
-        if (result.modifiedCount >= 1) {
-          res.send({ status: "updated" });
-        } else {
-          res.send({ status: "error" });
-          console.log(result);
-        }
-      });
-    })
-      
-
-
-    
-  });
+  
 
   app.patch("/updateProduct/:id", (req, res) => {
     collection
