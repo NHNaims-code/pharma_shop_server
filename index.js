@@ -102,16 +102,22 @@ client.connect((err) => {
 
   app.patch("/updateShop/", (req, res) => {
     console.log(req.body);
-    shops.updateOne({name: req.body.name},
-      {
-        $set: { product: req.body.product }
-      }).then(result => {
-        if(result.modifiedCount > 0){
-          res.send(true);
-        }else{
-          res.send(false);
-        }
-      })
+    let oldProducts = [];
+    shops.find({name: req.body.name}).toArray((err, documents) => {
+      oldProducts = documents[0].product;
+      newProducts = [...oldProducts, req.body.product]
+      shops.updateOne({name: req.body.name},
+        {
+          $set: { product: newProducts }
+        }).then(result => {
+          if(result.modifiedCount > 0){
+            res.send(true);
+          }else{
+            res.send(false);
+          }
+        })
+    })
+   
   })
 
 
