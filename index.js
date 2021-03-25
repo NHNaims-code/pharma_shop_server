@@ -99,6 +99,7 @@ client.connect((err) => {
 
     let oldQuantity = 0;
     let newQuantity = 0;
+    
     collection.find({ _id: ObjectId(req.body.id) }).toArray((err, documents) => {
       oldQuantity = documents[0].quantity;
       console.log(oldQuantity, "send: " ,  req.body.quantity);
