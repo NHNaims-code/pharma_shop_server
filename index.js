@@ -99,7 +99,7 @@ client.connect((err) => {
 
   //sales area
 app.get("/deleteFromSales/:id", (req, res) => {
-  sales.deleteOne({id: req.params.id})
+  sales.deleteOne({productId: req.params.id})
   .then(result => {
     if(result.deletedCount > 0){
       res.send(true);
