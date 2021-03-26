@@ -57,6 +57,7 @@ client.connect((err) => {
     })
   })
 
+  //lkk
    //sales area
   app.get("/sales", (req, res) => {
     sales.find({}).toArray((err, documents) => {
