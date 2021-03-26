@@ -98,7 +98,7 @@ client.connect((err) => {
   });
 
   //sales area
-app.get("/deleteFromSales/:id", (req, res) => {
+app.delete("/deleteFromSales/:id", (req, res) => {
   sales.deleteOne({productId: req.params.id})
   .then(result => {
     if(result.deletedCount > 0){
