@@ -30,6 +30,8 @@ client.connect((err) => {
   const staff = client.db("medi_shop_db").collection("staff");
   const shops = client.db("medi_shop_db").collection("shops");
   const sales = client.db("medi_shop_db").collection("sales");
+  const returnProduct = client.db("medi_shop_db").collection("return");
+  
   console.log("Mongo connected");
 
   app.post("/addProduct", (req, res) => {
@@ -95,6 +97,18 @@ client.connect((err) => {
  
   });
 
+  //sales area
+app.get("/deleteFromSales/:id", (req, res) => {
+  sales.deleteOne({id: req.params.id})
+  .then(result => {
+    if(result.deletedCount > 0){
+      res.send(true);
+    }else{
+      res.send(false);
+    }
+  })
+})
+
   //update product after sale
   app.patch("/updateSaleProduct/", (req, res) => {
 
@@ -122,6 +136,17 @@ client.connect((err) => {
       });
     })
   });
+
+//return area
+ app.post("/addToReturn", (req, res) => {
+   returnProduct.insertOne(req.body).then(result =>{
+     if(result.insertedCount > 0){
+       res.send(true);
+     }else{
+       res.send(false);
+     }
+   })
+ })
 
 //shop area
   app.get("/shops", (req, res) => {
@@ -161,6 +186,8 @@ client.connect((err) => {
     })
    
   })
+
+
 
 
 //staff area
