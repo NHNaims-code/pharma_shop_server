@@ -105,7 +105,7 @@ client.connect((err) => {
       oldQuantity = documents[0].quantity;
       console.log(oldQuantity, "send: " ,  req.body.quantity);
       
-      newQuantity = oldQuantity - req.body.quantity;
+      newQuantity = oldQuantity + req.body.quantity;
       console.log(newQuantity);
       collection.updateOne(
         { _id: ObjectId(req.body.id) },
