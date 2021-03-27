@@ -30,6 +30,7 @@ client.connect((err) => {
   const collection = client.db("medi_shop_db").collection("products");
   const staff = client.db("medi_shop_db").collection("staff");
   const shops = client.db("medi_shop_db").collection("shops");
+  const support = client.db("medi_shop_db").collection("support");
   const sales = client.db("medi_shop_db").collection("sales");
   const returnProduct = client.db("medi_shop_db").collection("return");
   
@@ -168,22 +169,14 @@ client.connect((err) => {
   })
 
   //shop area
-  app.patch("/updateShop/", (req, res) => {
-    console.log(req.body);
-    let oldProducts = [];
-    shops.find({name: req.body.name}).toArray((err, documents) => {
-      oldProducts = documents[0].product;
-      newProducts = [...oldProducts, ...(req.body.product)]
-      shops.updateOne({name: req.body.name},
-        {
-          $set: { product: newProducts }
-        }).then(result => {
-          if(result.modifiedCount > 0){
-            res.send(true);
-          }else{
-            res.send(false);
-          }
-        })
+  app.post("/addToSupport/", (req, res) => {
+   
+    support.insertOne(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+      }else{
+        res.send(fals);
+      }
     })
    
   })
