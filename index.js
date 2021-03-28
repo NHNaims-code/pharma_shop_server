@@ -271,6 +271,31 @@ client.connect((err) => {
         }
       });
   });
+  
+  app.patch("/editSale/:id", (req, res) => {
+    sales
+      .updateOne(
+        { _id: ObjectId(req.params.id) },
+        {
+          $set: {
+            company: req.body.company,
+            product: req.body.product,
+            quantity: req.body.quantity,
+            price_per_pic: req.body.price_per_pic,
+            exp: req.body.exp,
+            updatedDate: req.body.updatedDate,
+          },
+        }
+      )
+      .then((result) => {
+        console.log(result);
+        if (result.modifiedCount >= 1) {
+          res.send(true);
+        } else {
+          res.send(false);
+        }
+      });
+  });
 
   app.post("/buy", (req, res) => {
 
