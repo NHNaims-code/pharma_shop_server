@@ -156,6 +156,8 @@ client.connect((err) => {
    });
  })
 
+ 
+
 //shop area
   app.get("/shops", (req, res) => {
     shops.find({}).toArray((err, documents) => {
