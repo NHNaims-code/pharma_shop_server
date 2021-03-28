@@ -150,6 +150,12 @@ client.connect((err) => {
    })
  })
 
+ app.get("/returnProducts", (req, res) => {
+   returnProduct.find({}).toArray((err, documents)=>{
+     res.send(documents);
+   });
+ })
+
 //shop area
   app.get("/shops", (req, res) => {
     shops.find({}).toArray((err, documents) => {
@@ -272,6 +278,7 @@ client.connect((err) => {
       });
   });
   
+  //sale area
   app.patch("/editSale/:id", (req, res) => {
     sales
       .updateOne(
