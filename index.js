@@ -12,6 +12,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -102,8 +103,10 @@ client.connect((err) => {
 
   //sales area
   app.delete("/deleteFromSales/:id", (req, res) => {
-  sales.deleteOne({productId: req.params.id})
+    console.log(req.params.id);
+  sales.deleteOne({_id: ObjectId(req.params.id)})
   .then(result => {
+    console.log(result);
     if(result.deletedCount > 0){
       res.send(true);
     }else{
