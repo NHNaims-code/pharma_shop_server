@@ -194,11 +194,11 @@ client.connect((err) => {
   //shop area
   app.post("/addToSupport/", (req, res) => {
    
-    support.insertOne(req.body).then(result => {
+    support.insertMany(req.body, { ordered: true }).then(result => {
       if(result.insertedCount > 0){
         res.send(true);
       }else{
-        res.send(fals);
+        res.send(false);
       }
     })
    
