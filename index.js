@@ -5,7 +5,7 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
 const pdf = require("html-pdf");
 const pdfTemplate = require("./documents");
-const password = "MXv5ztE-s297SNy";
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -51,9 +51,10 @@ client.connect((err) => {
   //sales area
   app.post("/AddToSales", (req, res) =>{
     const product = req.body;
-    sales.insertOne(product)
+    console.log(product);
+    sales.insertMany(product, { ordered: true })
     .then((result) => {
-      if (result.insertedCount >= 1) {
+      if (result.insertedCount > 0) {
         res.send(true);
       } else {
         res.send(false);
@@ -116,26 +117,40 @@ client.connect((err) => {
 
     let oldQuantity = 0;
     let newQuantity = 0;
+    let totalUpdated = 0;
     
-    collection.find({ _id: ObjectId(req.body.id) }).toArray((err, documents) => {
-      oldQuantity = documents[0].quantity;
-      console.log(oldQuantity, "send: " ,  req.body.quantity);
+    const productArryLth = req.body.length;
+    console.log(productArryLth);
+    
+    req.body.map(p => {
+
+
+      collection.find({ _id: ObjectId(p.id) }).toArray((err, documents) => {
+        oldQuantity = documents[0].quantity;
       
-      newQuantity = parseInt(oldQuantity) + req.body.quantity;
-      console.log(newQuantity);
-      collection.updateOne(
-        { _id: ObjectId(req.body.id) },
-        { $set: { quantity:  newQuantity} }
-      )
-      .then((result) => {
-        console.log(result.modifiedCount);
-        if (result.modifiedCount >= 1) {
-          res.send({ status: "updated" });
-        } else {
-          res.send({ status: "error" });
-          console.log(result);
-        }
-      });
+        
+        newQuantity = parseInt(oldQuantity) + p.quantity;
+
+        collection.updateOne(
+          { _id: ObjectId(p.id) },
+          { $set: { quantity:  newQuantity} }
+        )
+        .then((result) => {
+          if (result.modifiedCount > 0) {
+            totalUpdated += 1;
+            console.log(totalUpdated);
+            if(totalUpdated == productArryLth){
+              res.send(true)
+            }
+          } else{
+            res.send(false);
+          }
+        });
+      })
+
+      
+
+
     })
   });
 
