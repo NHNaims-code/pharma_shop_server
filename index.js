@@ -51,7 +51,7 @@ client.connect((err) => {
   //sales area
   app.post("/AddToSales", (req, res) =>{
     const product = req.body;
-    console.log(product);
+   
     sales.insertMany(product, { ordered: true })
     .then((result) => {
       if (result.insertedCount > 0) {
@@ -72,10 +72,10 @@ client.connect((err) => {
 
    //sales area
   app.delete("/deleteItem/:id", (req, res) => {
-    console.log(req.params.id);
+ 
 
     collection.deleteOne({ _id: ObjectId(req.params.id) }).then((result) => {
-      console.log(result.deletedCount);
+   
       if (result.deletedCount >= 1) {
         res.send(true);
       } else {
@@ -94,7 +94,7 @@ client.connect((err) => {
    //sales area
   app.get("/products/:from/:to", (req, res) => {
     collection.find({updatedDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
-      console.log(documents);
+     
       res.send(documents);
     })
  
@@ -113,14 +113,14 @@ client.connect((err) => {
 })
 
   //update product after sale
-  app.patch("/updateSaleProduct/", (req, res) => {
+  app.patch("/updateStockProduct/", (req, res) => {
 
     let oldQuantity = 0;
     let newQuantity = 0;
     let totalUpdated = 0;
     
     const productArryLth = req.body.length;
-    console.log(productArryLth);
+    console.log(req.body);
     
     req.body.map(p => {
 
@@ -136,13 +136,12 @@ client.connect((err) => {
           { $set: { quantity:  newQuantity} }
         )
         .then((result) => {
+          console.log(result);
           if (result.modifiedCount > 0) {
             totalUpdated += 1;
-            console.log(totalUpdated);
             if(totalUpdated == productArryLth){
               res.send(true)
             }
-            
           } else{
             res.send(false);
           }
@@ -154,6 +153,33 @@ client.connect((err) => {
 
     })
   });
+
+  //update sale Product
+  app.patch("/updateSalesProduct", (req, res) => {
+    let newQuantity = 0;
+    let oldQuantity = 0;
+    let oldAmount = 0;
+    let newAmount = 0;
+    sales.find({_id: ObjectId(req.body.id)}).toArray((err, documents) => {
+      oldQuantity = documents[0].productQuantity;
+      oldAmount = documents[0].amount;
+      const rate = parseFloat(documents[0].rate);
+      newQuantity = parseInt(oldQuantity) + req.body.quantity;
+      newAmount = (newQuantity * rate).toFixed(2);
+      sales.updateOne({_id: ObjectId(req.body.id)},{
+        $set: {productQuantity: newQuantity, amount: newAmount}
+      }).then(result => {
+  
+        if(result.modifiedCount > 0){
+          res.send(true)
+     
+        }else{
+          res.send(false)
+        }
+      })
+    })
+    
+  })
 
 //return area
  app.post("/addToReturn", (req, res) => {
@@ -230,7 +256,7 @@ client.connect((err) => {
 
   //staff area
   app.patch("/updateStaff", (req, res) => {
-    console.log(req.body);
+
     staff.updateOne(
       { _id: ObjectId(req.body._id) },
     { $set: { name:  req.body.name, phone: req.body.phone, email: req.body.email, password: req.body.password, username: req.body.username, position: req.body.position} }).then(result =>{
@@ -240,7 +266,7 @@ client.connect((err) => {
         res.send(false)
       }
 
-      console.log(result);
+
     })
   })
 
@@ -257,7 +283,7 @@ client.connect((err) => {
 
   //staff area
   app.delete("/deleteStaff/:id", (req, res) =>{
-    console.log(req.params.id);
+
     staff.deleteOne({_id: ObjectId(req.params.id) })
     .then(result => {
       if(result.deletedCount > 0){
@@ -265,7 +291,7 @@ client.connect((err) => {
       }else{
         res.send(false);
       }
-      console.log(result);
+
     })
   })
 
@@ -287,7 +313,7 @@ client.connect((err) => {
         }
       )
       .then((result) => {
-        console.log(result);
+        
         if (result.modifiedCount >= 1) {
           res.send(true);
         } else {
@@ -313,7 +339,7 @@ client.connect((err) => {
         }
       )
       .then((result) => {
-        console.log(result);
+       
         if (result.modifiedCount >= 1) {
           res.send(true);
         } else {
@@ -324,16 +350,16 @@ client.connect((err) => {
 
   app.post("/buy", (req, res) => {
 
-    console.log("knock me");
+   
     res.sendFile(`${__dirname}/result.pdf`);
     // })
   });
 
   //Analysis Part 
   app.get("/findByDateSale/:from/:to", (req, res)=>{
-    console.log(req.body.from, " == ", req.body.to);
+  
     sales.find({saleDate: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
-      console.log(documents);
+
       res.send(documents);
     })
   })
