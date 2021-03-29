@@ -142,6 +142,7 @@ client.connect((err) => {
             if(totalUpdated == productArryLth){
               res.send(true)
             }
+            
           } else{
             res.send(false);
           }
