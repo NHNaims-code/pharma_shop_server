@@ -106,6 +106,13 @@ client.connect((err) => {
       res.send(documents);
     })
   });
+   //support area
+  app.get("/support/:from/:to", (req, res) => {
+    support.find({returnTime: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
+     
+      res.send(documents);
+    })
+  });
 
   //sales area
   app.delete("/deleteFromSales/:id", (req, res) => {
