@@ -98,7 +98,13 @@ client.connect((err) => {
      
       res.send(documents);
     })
- 
+  });
+   //return area
+  app.get("/return/:from/:to", (req, res) => {
+    returnProduct.find({returnTime: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
+     
+      res.send(documents);
+    })
   });
 
   //sales area
@@ -200,6 +206,8 @@ client.connect((err) => {
      res.send(documents);
    });
  })
+
+
 
  
 
