@@ -113,6 +113,12 @@ client.connect((err) => {
       res.send(documents);
     })
   });
+  //support area
+  app.get("/support/", (req, res) => {
+    support.find({}).toArray((err, documents) => {
+      res.send(documents);
+    })
+  })
 
   //sales area
   app.delete("/deleteFromSales/:id", (req, res) => {
