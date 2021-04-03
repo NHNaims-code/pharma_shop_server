@@ -13,6 +13,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -38,16 +39,34 @@ client.connect((err) => {
   console.log("Mongo connected");
 
   app.post("/addProduct", (req, res) => {
-    const product = req.body;
+    const query = {_id: req.body._id};
+    const options = {
+      // create a document if no documents match the query
+      upsert: true,
+    };
+    const replacement = req.body;
 
-    collection.insertOne(product).then((result) => {
-      if (result.insertedCount >= 1) {
-        res.send(true);
-      } else {
+    collection.replaceOne(query, replacement, options).then(result => {
+      if(result.upsertedCount===0 && result.modifiedCount === 0){
         res.send(false);
+      }else{
+        res.send(true)
       }
-    });
+    })
   });
+
+  app.post("/updateInventory", (req, res) => {
+    const query = {_id: req.body._id};
+    const options = {
+      // create a document if no documents match the query
+      upsert: true,
+    };
+    const replacement = req.body;
+
+    collection.replaceOne(query, replacement, options).then(result => {
+      console.log(result);
+    })
+  })
 
   //sales area
   app.post("/AddToSales", (req, res) =>{
@@ -121,8 +140,10 @@ client.connect((err) => {
   })
   //support area
   app.delete("/deleteSupport/:id", (req, res) => {
+    console.log(req.params.id);
     support.deleteOne({_id: ObjectId(req.params.id)}).then(result => {
-      if(deletedCount > 0){
+
+      if(result.deletedCount > 0){
         res.send(true);
       }else{
         res.send(false);
