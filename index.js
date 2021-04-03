@@ -329,8 +329,11 @@ client.connect((err) => {
           $set: {
             company: req.body.company,
             product: req.body.product,
+            type: req.body.type,
             quantity: req.body.quantity,
-            price_per_pic: req.body.price_per_pic,
+            entryBy: req.body.entryBy,
+            entryBy: req.body.entryBy,
+            rate: req.body.rate,
             exp: req.body.exp,
             updatedDate: req.body.updatedDate,
           },
