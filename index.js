@@ -119,6 +119,26 @@ client.connect((err) => {
       res.send(documents);
     })
   })
+  //support area
+  app.delete("/deleteSupport/:id", (req, res) => {
+    support.deleteOne({_id: ObjectId(req.params.id)}).then(result => {
+      if(deletedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
+  //support area
+  app.delete("/deleteManySupport/:shopName", (req, res) => {
+    support.deleteMany({shopName: req.params.shopName}).then(result => {
+      if(result.deletedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
 
   //sales area
   app.delete("/deleteFromSales/:id", (req, res) => {
