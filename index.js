@@ -39,7 +39,7 @@ client.connect((err) => {
   console.log("Mongo connected");
 
   app.post("/addProduct", (req, res) => {
-    const query = {_id: req.body._id};
+    const query = {product: req.body.product};
     const options = {
       // create a document if no documents match the query
       upsert: true,
