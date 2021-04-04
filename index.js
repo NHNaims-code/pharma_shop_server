@@ -162,6 +162,16 @@ client.connect((err) => {
   })
 
   //sales area
+  app.delete("/deleteCustomar/:customar", (req, res) => {
+    shops.deleteMany({customar: req.params.customar}).then(result => {
+      if(result.deletedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
+  //sales area
   app.delete("/deleteFromSales/:id", (req, res) => {
     console.log(req.params.id);
   sales.deleteOne({_id: ObjectId(req.params.id)})
