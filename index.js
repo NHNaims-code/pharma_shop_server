@@ -126,6 +126,17 @@ client.connect((err) => {
       res.send(documents);
     })
   });
+
+  //return area
+  app.delete("/deleteFromReturn/:productName", (req, res)=>{
+    returnProduct.deleteMany({productName: req.params.productName}).then(result =>{
+      if(result.deletedCount > 0){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+    })
+  })
    //support area
   app.get("/support/:from/:to", (req, res) => {
     support.find({supportTime: {$gt: req.params.from, $lt: req.params.to}}).toArray((err, documents) => {
