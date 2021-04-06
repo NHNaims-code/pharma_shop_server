@@ -258,7 +258,7 @@ client.connect((err) => {
       newPaid = parseFloat(oldPaid) - (parseFloat(newAmount) - parseFloat(oldAmount));
       newAmount = (newQuantity * rate).toFixed(2);
       sales.updateOne({_id: ObjectId(req.body.id)},{
-        $set: {productQuantity: newQuantity, amount: newAmount}
+        $set: {productQuantity: newQuantity, amount: newAmount, paid: newPaid}
       }).then(result => {
   
         if(result.modifiedCount > 0){
