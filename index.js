@@ -245,13 +245,17 @@ client.connect((err) => {
   app.patch("/updateSalesProduct", (req, res) => {
     let newQuantity = 0;
     let oldQuantity = 0;
+    let oldPaid = 0;
+    let newPaid = 0;
     let oldAmount = 0;
     let newAmount = 0;
     sales.find({_id: ObjectId(req.body.id)}).toArray((err, documents) => {
       oldQuantity = documents[0].productQuantity;
       oldAmount = documents[0].amount;
+      oldPaid = documents[0].paid;
       const rate = parseFloat(documents[0].rate);
       newQuantity = parseInt(oldQuantity) + req.body.quantity;
+      newPaid = parseFloat(oldPaid) - (parseFloat(newAmount) - parseFloat(oldAmount));
       newAmount = (newQuantity * rate).toFixed(2);
       sales.updateOne({_id: ObjectId(req.body.id)},{
         $set: {productQuantity: newQuantity, amount: newAmount}
