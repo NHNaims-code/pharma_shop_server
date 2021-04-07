@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
 const pdf = require("html-pdf");
-const pdfTemplate = require("./documents");
+// const pdfTemplate = require("./documents");
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
