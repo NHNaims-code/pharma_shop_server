@@ -6,9 +6,8 @@ const ObjectId = require("mongodb").ObjectId;
 const pdf = require("html-pdf");
 const pdfTemplate = require("./documents");
 
-//lkdfjk
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uw7zf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 
 
@@ -202,7 +201,6 @@ client.connect((err) => {
 
   //update product after sale
   app.patch("/updateStockProduct/", (req, res) => {
-    console.log("req.body");
 
     let oldQuantity = 0;
     let newQuantity = 0;
@@ -214,14 +212,14 @@ client.connect((err) => {
     req.body.map(p => {
 
 
-      collection.find({ product: req.body.productName }).toArray((err, documents) => {
+      collection.find({ _id: ObjectId(p.id) }).toArray((err, documents) => {
         oldQuantity = documents[0].quantity;
       
         
         newQuantity = parseInt(oldQuantity) + p.quantity;
 
         collection.updateOne(
-          { product: req.body.productName },
+          { _id: ObjectId(p.id) },
           { $set: { quantity:  newQuantity} }
         )
         .then((result) => {
