@@ -15,6 +15,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -201,6 +202,7 @@ client.connect((err) => {
 
   //update product after sale
   app.patch("/updateStockProduct/", (req, res) => {
+    console.log("req.body");
 
     let oldQuantity = 0;
     let newQuantity = 0;
