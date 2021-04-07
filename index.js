@@ -212,14 +212,14 @@ client.connect((err) => {
     req.body.map(p => {
 
 
-      collection.find({ _id: ObjectId(p.id) }).toArray((err, documents) => {
+      collection.find({ product: req.body.productName }).toArray((err, documents) => {
         oldQuantity = documents[0].quantity;
       
         
         newQuantity = parseInt(oldQuantity) + p.quantity;
 
         collection.updateOne(
-          { _id: ObjectId(p.id) },
+          { product: req.body.productName },
           { $set: { quantity:  newQuantity} }
         )
         .then((result) => {
