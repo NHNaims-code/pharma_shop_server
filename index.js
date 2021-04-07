@@ -15,6 +15,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -207,25 +208,27 @@ client.connect((err) => {
     let totalUpdated = 0;
     
     const productArryLth = req.body.length;
-    console.log(req.body);
+    // console.log(req.body);
     
     req.body.map(p => {
 
-
-      collection.find({ _id: ObjectId(p.id) }).toArray((err, documents) => {
-        oldQuantity = documents[0].quantity;
-      
+      console.log(p.productName, p.quantity);
+      collection.find({ product: p.productName }).toArray((err, documents) => {
+        if(documents.length != 0){
+          oldQuantity = documents[0].quantity;
+        console.log(documents);
         
         newQuantity = parseInt(oldQuantity) + p.quantity;
-
+        console.log(newQuantity);
         collection.updateOne(
-          { _id: ObjectId(p.id) },
+          { product: p.productName },
           { $set: { quantity:  newQuantity} }
         )
         .then((result) => {
-          console.log(result);
+          console.log(result.modifiedCount);
           if (result.modifiedCount > 0) {
             totalUpdated += 1;
+            console.log("resultll: ", totalUpdated, productArryLth);
             if(totalUpdated == productArryLth){
               res.send(true)
             }
@@ -233,6 +236,9 @@ client.connect((err) => {
             res.send(false);
           }
         });
+        }else{
+          res.send(false);
+        }
       })
 
       
