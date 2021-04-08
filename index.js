@@ -105,8 +105,7 @@ app.patch("/updateStockProduct/", (req, res) => {
     collection.find({ product: p.productName }).toArray((err, documents) => {
       if(documents.length != 0){
         oldQuantity = documents[0].quantity;
-      console.log(documents);
-      
+     
       newQuantity = parseInt(oldQuantity) + p.quantity;
       console.log(newQuantity);
       collection.updateOne(
@@ -267,6 +266,62 @@ app.delete("/deleteManySupport/:shopName", (req, res) => {
     }
   })
 })
+
+app.patch("/updateToSupport", (req, res) => {
+  console.log(req.body);
+  const waitingUpdate = req.body.length;
+  let completeUpdate = 0;
+  req.body.map(p => {
+    support.find({shopName: p.shopName, productName: p.productName}).toArray((err, documents) => {
+        if(documents){
+          const oldDocument = documents[0];
+          const newQuantity = parseInt(oldDocument.quantity) + p.quantity;
+          console.log(newQuantity);
+          support.updateOne({shopName: p.shopName, productName: p.productName}, {$set: {quantity: newQuantity}}).then(result => {
+            if(result.modifiedCount > 0){
+              completeUpdate += 1;
+              if(completeUpdate === waitingUpdate){
+                res.send(true);
+              }
+            }
+          })
+      
+        }else{
+          res.send(false)
+        }
+      })
+    })
+  })
+
+app.post("/addToSupport/", (req, res) => {
+   
+
+ let updateWaiting = req.body.length;
+ let updateComplete = 0;
+if(updateWaiting != 0){
+  req.body.map(p=>{
+    
+    const query = {productName: p.productName, shopName: p.shopName};
+      const options = {
+        upsert: true,
+      };
+      const replacement = p;
+      support.replaceOne(query, replacement, options).then(result => {
+        // console.log(result);
+        if(result.upsertedCount===0 || result.modifiedCount === 0){
+          updateComplete += 1;
+          console.log(updateComplete, updateComplete);
+          if(updateWaiting == updateComplete){
+            res.send(true);
+          }
+        }
+      });
+  })
+}else{
+  res.send(false);
+}
+  
+})
  //sales---------------------------5--------------------------------sales--------------------------------------- 
 
  app.post("/AddToSales", (req, res) =>{
@@ -379,39 +434,7 @@ app.get("/findByDateSale/:from/:to", (req, res)=>{
   })
 })
 
-app.post("/addToSupport/", (req, res) => {
-   
-  console.log(req.body);
 
-  req.body.map(p=>{
-    support.find({shopName: p.shopName, shopName: p.shopName}).toArray((err, documents) => {
-      console.log(documents.length);
-      if(documents.length != 0){
-        console.log("enter");
-        const oldDocument = documents[0];
-        const newQuantity = parseInt(oldDocument.quantity) + parseInt(p.quantity);
-        const newDateList = [...oldDocument.supportTime, p.supportTime]
-
-        support.updateOne({shopName: p.shopName, shopName: p.shopName}, {$set: {quantity: newQuantity, supportTime: newDateList}}).then(result => {
-          if(result.modifiedCount > 0){
-            res.send(true);
-          }else{
-            res.send(false);
-          }
-        })
-      }else{
-        support.insertOne(p).then(result => {
-          if(result.insertedCount > 0){
-            res.send(true);
-          }else{
-            res.send(false);
-          }
-        })
-      }
-    })
-    
-  })
-})
 
  //returnProduct-------------------6--------------------------------returnProduct--------------------------------------- 
  app.get("/return/:from/:to", (req, res) => {
@@ -421,7 +444,6 @@ app.post("/addToSupport/", (req, res) => {
   })
 });
 
-//return area
 app.delete("/deleteFromReturn/:productName", (req, res)=>{
   returnProduct.deleteMany({productName: req.params.productName}).then(result =>{
     if(result.deletedCount > 0){
