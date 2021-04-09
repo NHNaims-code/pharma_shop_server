@@ -17,6 +17,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -38,9 +39,96 @@ client.connect((err) => {
   const support = client.db("medi_shop_db").collection("support");
   const sales = client.db("medi_shop_db").collection("sales");
   const returnProduct = client.db("medi_shop_db").collection("return");
+  const test = client.db("medi_shop_db").collection("test");
   
   console.log("Mongo connected");
 
+  //test area 
+  app.post("/testInsertMany", (req, res) => {
+    console.log(req.body);
+    test.insertMany(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+        console.log(true);
+      }else{
+        res.send(false);
+        console.log(false);
+      }
+    })
+  })
+  //test area 
+//Importe Section
+
+app.post("/importSupport",(req, res)=>{
+  if(req.body.length){
+    support.insertMany(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+        console.log(true);
+      }else{
+        res.send(false);
+        console.log(false);
+      }
+    })
+  }else{
+    res.send(false)
+  }
+})
+app.post("/importProduct",(req, res)=>{
+  if(req.body.length){
+    collection.insertMany(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+        console.log(true);
+      }else{
+        res.send(false);
+        console.log(false);
+      }
+    })
+  }else{
+    res.send(false)
+  }
+})
+app.post("/importSale",(req, res)=>{
+  if(req.body.length){
+    sales.insertMany(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+        console.log(true);
+      }else{
+        res.send(false);
+        console.log(false);
+      }
+    })
+  }else{
+    res.send(false)
+  }
+})
+app.post("/importReturn",(req, res)=>{
+  if(req.body.length){
+    returnProduct.insertMany(req.body).then(result => {
+      if(result.insertedCount > 0){
+        res.send(true);
+        console.log(true);
+      }else{
+        res.send(false);
+        console.log(false);
+      }
+    })
+  }else{
+    res.send(false)
+  }
+})
+
+
+
+
+
+
+
+
+
+//Importe Section
  //Collection----------------------1--------------------------------Collection--------------------------------------- 
  app.post("/addProduct", (req, res) => {
   const query = {product: req.body.product};
@@ -322,6 +410,8 @@ if(updateWaiting != 0){
 }
   
 })
+
+
  //sales---------------------------5--------------------------------sales--------------------------------------- 
 
  app.post("/AddToSales", (req, res) =>{
