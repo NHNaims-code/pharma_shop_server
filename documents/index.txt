@@ -383,15 +383,31 @@ app.patch("/updateToSupport", (req, res) => {
 
 app.post("/addToSupport/", (req, res) => {
    
-  const product = req.body;
-  support.insertMany(product, { ordered: true })
-  .then((result) => {
-    if (result.insertedCount > 0) {
-      res.send(true);
-    } else {
-      res.send(false);
-    }
+
+ let updateWaiting = req.body.length;
+ let updateComplete = 0;
+if(updateWaiting != 0){
+  req.body.map(p=>{
+    
+    const query = {productName: p.productName, shopName: p.shopName};
+      const options = {
+        upsert: true,
+      };
+      const replacement = p;
+      support.replaceOne(query, replacement, options).then(result => {
+        // console.log(result);
+        if(result.upsertedCount===0 || result.modifiedCount === 0){
+          updateComplete += 1;
+          console.log(updateComplete, updateComplete);
+          if(updateWaiting == updateComplete){
+            res.send(true);
+          }
+        }
+      });
   })
+}else{
+  res.send(false);
+}
   
 })
 
